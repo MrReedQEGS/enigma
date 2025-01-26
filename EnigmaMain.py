@@ -157,12 +157,36 @@ class Reflector():
     def GetMappingNumber(self,inputValue):
         return self.reflectorMapping[inputValue]
 
+class PlugBoard():
+    def __init__(self):
+        self.plugList = []
+    
+    def AddPlugPair(self,someNewPair):
+        self.plugList.append(someNewPair)
+    
+    def CheckForPlugLink(self,someLetter):
+        newLetter = someLetter
+
+        for pair in self.plugList:
+            first = pair[0]
+            second = pair[1]
+
+            if(someLetter == first):
+                newLetter = second
+                return newLetter
+            elif(someLetter == second):
+                newLetter = first
+                return newLetter
+
+        return newLetter
+
 class Enigma():
-    def __init__(self,newRotor1,newRotor2,newRotor3,newReflector):
+    def __init__(self,newRotor1,newRotor2,newRotor3,newReflector,newPlugBoard):
         self.rotor1 = newRotor1
         self.rotor2 = newRotor2
         self.rotor3 = newRotor3
         self.reflector = newReflector
+        self.thePlugBoard = newPlugBoard
 
     def PrintAllRotors(self):
         print(self.rotor1.rotorMapping)
@@ -178,12 +202,16 @@ class Enigma():
             if(DEBUG):
                 print("Working on letter : " + letter)
                 print("---------------------")
-            r1In = LetterToPos(letter)
+
+            
             self.rotor1.Rotate()  #It rotates BEFORE the cypher happens!!!
 
             if(DEBUG):
                 self.PrintAllRotors()
-            
+
+            #plugboard first time through...
+            letterBeforePlugBoard = self.thePlugBoard.CheckForPlugLink(letter)
+            r1In = LetterToPos(letterBeforePlugBoard)
             r1Out = self.rotor1.GetMappingNumber(r1In)
             r1OutLetter = PosToLetter(r1Out)
             if(DEBUG):
@@ -223,8 +251,14 @@ class Enigma():
 
             if(DEBUG):
                 print("---------------------")
+
+
+            letterBeforePlugBoard = PosToLetter(r1BackOut)
+
+            #Check for a final plugboard swap
+            afterPlugBoard = self.thePlugBoard.CheckForPlugLink(letterBeforePlugBoard)
             
-            cypher = cypher + PosToLetter(r1BackOut)
+            cypher = cypher + afterPlugBoard
             
             if(letterCount == SPACING):
                 letterCount = 1
@@ -237,7 +271,7 @@ class Enigma():
 
         return cypher
 
-inText = "HELLO WORLD"
+inText = "AAAA"
 inTextWithoutSpaces = inText.upper().replace(" ", "")
 
 if(DEBUG):
@@ -247,11 +281,15 @@ if(DEBUG):
 #This is AAA really, because it moves once before the first letter is encoded.
 userSetting = "AAZ"
 
-r1 = Rotor("II",userSetting[2])
-r2 = Rotor("III",userSetting[1])
-r3 = Rotor("I",userSetting[0])
+r1 = Rotor("I",userSetting[2])
+r2 = Rotor("II",userSetting[1])
+r3 = Rotor("III",userSetting[0])
 ref = Reflector("B")
-theEnigma = Enigma(r1,r2,r3,ref)
+myPlugBoard = PlugBoard()
+myPlugBoard.AddPlugPair(["A","W"])
+myPlugBoard.AddPlugPair(["H","Z"])
+
+theEnigma = Enigma(r1,r2,r3,ref,myPlugBoard)
 
 if(DEBUG):
     theEnigma.PrintAllRotors()
