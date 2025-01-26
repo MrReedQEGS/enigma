@@ -24,6 +24,16 @@
 #IV	    ESOVPZJAYQUIRHXLNFTGKDCMWB	  R	        J	        1
 #V	    VZBRGITYUPSDNHLXAWMJQOFECK	  H	        Z	        1
 
+#NOTCH Info
+# The position of the notch is different for each of the rotors. 
+# In the table above we can see that rotor I has a notch on letter Y. 
+# If this notch is positioned in front of the pawl, the letter Q is visible in the little window.
+# This means as Q passes out of the window it will cause the rotor on its left to move by 1 position.
+#
+# The ring settings, or Ringstellung, are used to change the position of the alphabet ring relative to the 
+# internal wiring. The notch and alphabet ring are fixed together. Changing the ring setting will therefore change 
+# the positions of the wiring, relative to the turnover-point and start position.
+
 # REFLECTORS
 #       ABCDEFGHIJKLMNOPQRSTUVWXYZ	
 #UKW-A	EJMZALYXVBWFCRQUONTSPIKHGD	 	  - NOT USING THIS ONE... 	 
