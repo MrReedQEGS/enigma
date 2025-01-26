@@ -27,6 +27,8 @@
 #Tech details about ring settings, etc.
 # https://www.ciphermachinesandcryptology.com/en/enigmatech.htm
 
+ETW	        = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
 def LetterToPos(someLetter):
     val = ord(someLetter)
     return val - 65
@@ -35,13 +37,23 @@ def PosToLetter(somePos):
     letter = chr(somePos + 65)
     return letter
 
-def TurnLetterMappingIntoMappingNumbers(someList):
-    answer = []
+def MakeForwardsMappingList(someList):
+    forwardsMapping = []
+    pos = 0
     for letter in someList:
-        answer.append(LetterToPos(letter))
-    return answer
+        diff = LetterToPos(letter) - pos
+        forwardsMapping.append(diff)
+        pos = pos + 1
+    return forwardsMapping
 
-ETW	        = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+def MakeBackwardsMappingList(someList):
+    backwardsMapping = []
+    for i in range(26):
+        currentLetter = ETW[i]
+        pos = someList.index(currentLetter)
+        diff = pos - i
+        backwardsMapping.append(diff)
+    return backwardsMapping
 
 pos = 0
 for letter in ETW:
@@ -49,61 +61,75 @@ for letter in ETW:
     pos = pos + 1
 
 ROTOR_I     = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
-ROTOR_I_NUMS = TurnLetterMappingIntoMappingNumbers(ROTOR_I)
+ROTOR_I_NUMS = MakeForwardsMappingList(ROTOR_I)
+ROTOR_I_NUMS_BACK = MakeBackwardsMappingList(ROTOR_I)
 
 ROTOR_II    = "AJDKSIRUXBLHWTMCQGZNPYFVOE"
-ROTOR_II_NUMS = TurnLetterMappingIntoMappingNumbers(ROTOR_II)
-print(ROTOR_II_NUMS)
-
+ROTOR_II_NUMS = MakeForwardsMappingList(ROTOR_II)
+ROTOR_II_NUMS_BACK = MakeBackwardsMappingList(ROTOR_II)
 
 ROTOR_III   = "BDFHJLCPRTXVZNYEIWGAKMUSQO"
-ROTOR_III_NUMS = TurnLetterMappingIntoMappingNumbers(ROTOR_III)
-
-
+ROTOR_III_NUMS = MakeForwardsMappingList(ROTOR_III)
+ROTOR_III_NUMS_BACK = MakeBackwardsMappingList(ROTOR_III)
 
 #ROTOR_IV    = ["E","S","O","V","P","Z","J","A","Y","Q","U","I","R","H","X","L","N","F","T","G","K","D","C","M","W","B"]
 #ROTOR_V     = ["V","Z","B","R","G","I","T","Y","U","P","S","D","N","H","L","X","A","W","M","J","Q","O","F","E","C","K"]
 #UKW_A       = ["E","J","M","Z","A","L","Y","X","V","B","W","F","C","R","Q","U","O","N","T","S","P","I","K","H","G","D"]	 	 	 
 UKW_B       = "YRUHQSLDPXNGOKMIEBFZCWVJAT"	 
-UKW_B_NUMS = TurnLetterMappingIntoMappingNumbers(UKW_B)
+UKW_B_NUMS = MakeForwardsMappingList(UKW_B)
 
 UKW_C       = ["F","V","P","J","I","A","O","Y","E","D","R","Z","X","W","G","C","T","K","U","Q","S","B","N","M","H","L"]
-UKW_C_NUMS = TurnLetterMappingIntoMappingNumbers(UKW_C)
+UKW_C_NUMS = MakeForwardsMappingList(UKW_C)
 
 class Rotor():
     def __init__(self,newRotorType,newPos):
         if(newRotorType == "I"):
             self.rotorMapping = ROTOR_I_NUMS
+            self.rotorMappingBackwards = ROTOR_I_NUMS_BACK
             self.notch = "Y"
             self.turnover = "Q"
         elif(newRotorType == "II"):
             self.rotorMapping = ROTOR_II_NUMS
+            self.rotorMappingBackwards = ROTOR_II_NUMS_BACK
             self.notch = "M"
             self.turnover = "E"
         elif(newRotorType == "III"):
             self.rotorMapping = ROTOR_III_NUMS
+            self.rotorMappingBackwards = ROTOR_III_NUMS_BACK
             self.notch = "D"
             self.turnover = "V"
         
         self.InitialiseRotorPos(newPos)
 
-    def InitialiseRotorPos(self,somePos):
+    def InitialiseRotorPos(self,someLetter):
+        somePos = ord(someLetter) - 65
         while(somePos > 0):
             self.Rotate()
             somePos = somePos - 1
 
-    def GetMappedLetter(self,inputValue,forward=True):
+    def GetMappingNumber(self,inputValue,forward=True):
+        newPos = 0
+
         if(forward):
-            return self.rotorMapping[inputValue]
+            newPos = inputValue + self.rotorMapping[inputValue]
         else:
-            pos = self.rotorMapping.index(inputValue)
-            return pos
+            newPos = self.rotorMappingBackwards[inputValue]
+
+        if(newPos > 25):
+            newPos = newPos - 26
+
+        if(newPos < 0):
+            newPos = 26 + newPos
+
+        return newPos
         
     def Rotate(self):
-        #Move once the rotor forwards once - This puts the end letter onto the front of the list and shuffles things along
-        lastThing = self.rotorMapping.pop()
-        self.rotorMapping.insert(0,lastThing)
-        
+        firstThing = self.rotorMapping.pop(0)
+        self.rotorMapping.append(firstThing)
+
+        firstThing = self.rotorMappingBackwards.pop(0)
+        self.rotorMappingBackwards.append(firstThing)
+
         #Should really return true or false to say if notch is moving the next wheel across!
         #TODO
 
@@ -115,14 +141,8 @@ class Reflector():
         elif(newReflectorType == "C"):
             self.reflectorMapping = UKW_C_NUMS
 
-    def GetMappedLetter(self,inputValue,forward=True):
-        #I feel like this only needs to work one way...have a think about it.
-        if(forward):
-            return self.reflectorMapping[inputValue]
-        else:
-            pos = self.reflectorMapping.index(inputValue)
-            return pos
-
+    def GetMappingNumber(self,inputValue):
+        return self.reflectorMapping[inputValue]
 
 class Enigma():
     def __init__(self,newRotor1,newRotor2,newRotor3,newReflector):
@@ -135,6 +155,7 @@ class Enigma():
         print(self.rotor1.rotorMapping)
         print(self.rotor2.rotorMapping)
         print(self.rotor3.rotorMapping)
+        print(self.reflector.reflectorMapping)
 
     def scrambleMessage(self,incoming):
 
@@ -147,33 +168,33 @@ class Enigma():
 
             self.PrintAllRotors()
             
-            r1Out = self.rotor1.GetMappedLetter(r1In)
+            r1Out = self.rotor1.GetMappingNumber(r1In) + ord(letter) - 65
             r1OutLetter = PosToLetter(r1Out)
             print("<-R1 : " + letter + " -> " + PosToLetter(r1Out))
             print(str(r1In) + ">>" + str(r1Out))
 
-            r2Out = self.rotor2.GetMappedLetter(r1Out)
+            r2Out = self.rotor2.GetMappingNumber(r1Out)
             print("<-R2 : " + PosToLetter(r1Out) + " -> " + PosToLetter(r2Out))
             print(str(r1Out) + ">>" + str(r2Out))
 
-            r3Out = self.rotor3.GetMappedLetter(r2Out)
+            r3Out = self.rotor3.GetMappingNumber(r2Out)
             print("<-R3 : " + PosToLetter(r2Out) + " -> " + PosToLetter(r3Out))
             print(str(r2Out) + ">>" + str(r3Out))
 
-            refOut =  self.reflector.GetMappedLetter(r3Out)
+            refOut =  self.reflector.GetMappingNumber(r3Out)
             print("<Ref>: " + PosToLetter(r3Out) + " -> " + PosToLetter(refOut))
             print(str(r3Out) + ">>" + str(refOut))
 
             #Now pass the signal back wards through III, II, I rotors...
-            r3BackOut =  self.rotor3.GetMappedLetter(refOut,False)
+            r3BackOut =  self.rotor3.GetMappingNumber(refOut,False)
             print("r3->: " + PosToLetter(refOut) + " -> " + PosToLetter(r3BackOut))
             print(str(refOut) + ">>" + str(r3BackOut))
 
-            r2BackOut =  self.rotor2.GetMappedLetter(r3BackOut,False)
+            r2BackOut =  self.rotor2.GetMappingNumber(r3BackOut,False)
             print("r2->: " + PosToLetter(r3BackOut) + " -> " + PosToLetter(r2BackOut))
             print(str(r3BackOut) + ">>" + str(r2BackOut))
 
-            r1BackOut =  self.rotor1.GetMappedLetter(r2BackOut,False)
+            r1BackOut =  self.rotor1.GetMappingNumber(r2BackOut,False)
             print("r1->: " + PosToLetter(r2BackOut) + " -> " + PosToLetter(r1BackOut))
             print(str(r2BackOut) + ">>" + str(r1BackOut))
 
@@ -184,14 +205,19 @@ class Enigma():
 
         return cypher
 
-inText = "B".upper()
+inText = "AAA".upper()
 print("Plain text : " + inText)
 
-r1 = Rotor("I",25)
-r2 = Rotor("II",0)
-r3 = Rotor("III",0)
+#Initial rotor settings - set by person sending the code
+#This is AAA really, because it moves once before the first letter is encoded.
+userSetting = "AAZ"
+
+r1 = Rotor("I",userSetting[2])
+r2 = Rotor("II",userSetting[1])
+r3 = Rotor("III",userSetting[0])
 ref = Reflector("B")
 theEnigma = Enigma(r1,r2,r3,ref)
+theEnigma.PrintAllRotors()
 
 outText = theEnigma.scrambleMessage(inText)
 
