@@ -2,7 +2,7 @@
 # Jan 2025
 # Mark Reed
 
-#NO NOTCH OR PLUGBOARD YET, but it is working!!!!
+#NO NOTCH/TURNOVER YET, but it is working!!!!
 
 #I could do with numbering my rotors 1 2 3, but I did it this way.
 
