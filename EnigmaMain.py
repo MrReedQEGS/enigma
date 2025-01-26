@@ -21,13 +21,15 @@
 # NO PLUGBOARD / "STECKER" at this stage...my brain hurts already
 
 #Testing done using virtual enigma machine!
-# https://enigma.virtualcolossus.co.uk/VirtualEnigma/
-
+# https://www.101computing.net/enigma/
 
 #Tech details about ring settings, etc.
 # https://www.ciphermachinesandcryptology.com/en/enigmatech.htm
 
 ETW	        = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+DEBUG = False
+SPACING = 5
 
 def LetterToPos(someLetter):
     val = ord(someLetter)
@@ -55,10 +57,11 @@ def MakeBackwardsMappingList(someList):
         backwardsMapping.append(diff)
     return backwardsMapping
 
-pos = 0
-for letter in ETW:
-    print(str(pos) + ":" + letter)
-    pos = pos + 1
+if(DEBUG):
+    pos = 0
+    for letter in ETW:
+        print(str(pos) + ":" + letter)
+        pos = pos + 1
 
 ROTOR_I     = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
 ROTOR_I_NUMS = MakeForwardsMappingList(ROTOR_I)
@@ -113,7 +116,7 @@ class Rotor():
         if(forward):
             newPos = inputValue + self.rotorMapping[inputValue]
         else:
-            newPos = self.rotorMappingBackwards[inputValue]
+            newPos = inputValue + self.rotorMappingBackwards[inputValue]
 
         if(newPos > 25):
             newPos = newPos - 26
@@ -160,66 +163,90 @@ class Enigma():
     def scrambleMessage(self,incoming):
 
         cypher = ""
+        letterCount = 1
         for letter in incoming:
-            print("Working on letter : " + letter)
-            print("---------------------")
+            if(DEBUG):
+                print("Working on letter : " + letter)
+                print("---------------------")
             r1In = LetterToPos(letter)
             self.rotor1.Rotate()  #It rotates BEFORE the cypher happens!!!
 
-            self.PrintAllRotors()
+            if(DEBUG):
+                self.PrintAllRotors()
             
-            r1Out = self.rotor1.GetMappingNumber(r1In) + ord(letter) - 65
+            r1Out = self.rotor1.GetMappingNumber(r1In)
             r1OutLetter = PosToLetter(r1Out)
-            print("<-R1 : " + letter + " -> " + PosToLetter(r1Out))
-            print(str(r1In) + ">>" + str(r1Out))
+            if(DEBUG):
+                print("<-R1 : " + letter + " -> " + PosToLetter(r1Out))
+                print(str(r1In) + ">>" + str(r1Out))
 
             r2Out = self.rotor2.GetMappingNumber(r1Out)
-            print("<-R2 : " + PosToLetter(r1Out) + " -> " + PosToLetter(r2Out))
-            print(str(r1Out) + ">>" + str(r2Out))
+            if(DEBUG):
+                print("<-R2 : " + PosToLetter(r1Out) + " -> " + PosToLetter(r2Out))
+                print(str(r1Out) + ">>" + str(r2Out))
 
             r3Out = self.rotor3.GetMappingNumber(r2Out)
-            print("<-R3 : " + PosToLetter(r2Out) + " -> " + PosToLetter(r3Out))
-            print(str(r2Out) + ">>" + str(r3Out))
+            if(DEBUG):
+                print("<-R3 : " + PosToLetter(r2Out) + " -> " + PosToLetter(r3Out))
+                print(str(r2Out) + ">>" + str(r3Out))
 
-            refOut =  self.reflector.GetMappingNumber(r3Out)
-            print("<Ref>: " + PosToLetter(r3Out) + " -> " + PosToLetter(refOut))
-            print(str(r3Out) + ">>" + str(refOut))
+            refOut =  self.reflector.GetMappingNumber(r3Out) + r3Out
+            if(DEBUG):
+                print("<Ref>: " + PosToLetter(r3Out) + " -> " + PosToLetter(refOut))
+                print(str(r3Out) + ">>" + str(refOut))
 
             #Now pass the signal back wards through III, II, I rotors...
             r3BackOut =  self.rotor3.GetMappingNumber(refOut,False)
-            print("r3->: " + PosToLetter(refOut) + " -> " + PosToLetter(r3BackOut))
-            print(str(refOut) + ">>" + str(r3BackOut))
+            if(DEBUG):
+                print("r3->: " + PosToLetter(refOut) + " -> " + PosToLetter(r3BackOut))
+                print(str(refOut) + ">>" + str(r3BackOut))
 
             r2BackOut =  self.rotor2.GetMappingNumber(r3BackOut,False)
-            print("r2->: " + PosToLetter(r3BackOut) + " -> " + PosToLetter(r2BackOut))
-            print(str(r3BackOut) + ">>" + str(r2BackOut))
+            if(DEBUG):
+                print("r2->: " + PosToLetter(r3BackOut) + " -> " + PosToLetter(r2BackOut))
+                print(str(r3BackOut) + ">>" + str(r2BackOut))
 
             r1BackOut =  self.rotor1.GetMappingNumber(r2BackOut,False)
-            print("r1->: " + PosToLetter(r2BackOut) + " -> " + PosToLetter(r1BackOut))
-            print(str(r2BackOut) + ">>" + str(r1BackOut))
+            if(DEBUG):
+                print("r1->: " + PosToLetter(r2BackOut) + " -> " + PosToLetter(r1BackOut))
+                print(str(r2BackOut) + ">>" + str(r1BackOut))
 
+            if(DEBUG):
+                print("---------------------")
+            
             cypher = cypher + PosToLetter(r1BackOut)
-            print("---------------------")
-            #TO DO - must pass through all rotors twice and reflector
+            
+            if(letterCount == SPACING):
+                letterCount = 1
+                cypher = cypher + " "
+            else:
+                letterCount = letterCount + 1
+
+            #TODO
             #ROTORS HAVE TO MOVE - NOTCHES DO THINGS, etc.
 
         return cypher
 
-inText = "AAA".upper()
-print("Plain text : " + inText)
+inText = "HELLO WORLD"
+inTextWithoutSpaces = inText.upper().replace(" ", "")
+
+if(DEBUG):
+    print("Plain text : " + inText)
 
 #Initial rotor settings - set by person sending the code
 #This is AAA really, because it moves once before the first letter is encoded.
-userSetting = "AAZ"
+userSetting = "BBB"
 
 r1 = Rotor("I",userSetting[2])
 r2 = Rotor("II",userSetting[1])
 r3 = Rotor("III",userSetting[0])
 ref = Reflector("B")
 theEnigma = Enigma(r1,r2,r3,ref)
-theEnigma.PrintAllRotors()
 
-outText = theEnigma.scrambleMessage(inText)
+if(DEBUG):
+    theEnigma.PrintAllRotors()
+
+outText = theEnigma.scrambleMessage(inTextWithoutSpaces)
 
 print("Plain text : " + inText)
 print("Cypher     : " + outText)
