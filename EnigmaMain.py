@@ -235,11 +235,11 @@ if(DEBUG):
 
 #Initial rotor settings - set by person sending the code
 #This is AAA really, because it moves once before the first letter is encoded.
-userSetting = "BBB"
+userSetting = "AAZ"
 
-r1 = Rotor("I",userSetting[2])
-r2 = Rotor("II",userSetting[1])
-r3 = Rotor("III",userSetting[0])
+r1 = Rotor("II",userSetting[2])
+r2 = Rotor("III",userSetting[1])
+r3 = Rotor("I",userSetting[0])
 ref = Reflector("B")
 theEnigma = Enigma(r1,r2,r3,ref)
 
