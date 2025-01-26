@@ -271,7 +271,7 @@ class Enigma():
 
         return cypher
 
-inText = "AAAA"
+inText = "AAAAS SSS"
 inTextWithoutSpaces = inText.upper().replace(" ", "")
 
 if(DEBUG):
@@ -288,6 +288,7 @@ ref = Reflector("B")
 myPlugBoard = PlugBoard()
 myPlugBoard.AddPlugPair(["A","W"])
 myPlugBoard.AddPlugPair(["H","Z"])
+myPlugBoard.AddPlugPair(["B","L"])
 
 theEnigma = Enigma(r1,r2,r3,ref,myPlugBoard)
 
