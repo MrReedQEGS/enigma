@@ -2,6 +2,18 @@
 # Jan 2025
 # Mark Reed
 
+#NO NOTCH OR PLUGBOARD YET, but it is working!!!!
+
+#I could do with numbering my rotors 1 2 3, but I did it this way.
+
+# R
+# E         <-      R3      <-      R2      <-      R1      <-      E
+# F
+# L                                                                 T
+# E         
+# C         ->      R3      ->      R2      ->      R1      ->      W
+# T
+
 #Rotor settings from website https://enigma.virtualcolossus.co.uk/technical.html
 
 #Wheel	ABCDEFGHIJKLMNOPQRSTUVWXYZ	Notch	Turnover	No. Notches
@@ -14,11 +26,9 @@
 
 # REFLECTORS
 #       ABCDEFGHIJKLMNOPQRSTUVWXYZ	
-#UKW-A	EJMZALYXVBWFCRQUONTSPIKHGD	 	 	 
+#UKW-A	EJMZALYXVBWFCRQUONTSPIKHGD	 	  - NOT USING THIS ONE... 	 
 #UKW-B	YRUHQSLDPXNGOKMIEBFZCWVJAT	 	 	 
 #UKW-C	FVPJIAOYEDRZXWGCTKUQSBNMHL
-
-# NO PLUGBOARD / "STECKER" at this stage...my brain hurts already
 
 #Testing done using virtual enigma machine!
 # https://www.101computing.net/enigma/
@@ -136,7 +146,7 @@ class Rotor():
         #Should really return true or false to say if notch is moving the next wheel across!
         #TODO
 
-#TO DO - inheritance?  The rotors are like the reflector but they have rotation too!
+#TODO - inheritance?  The rotors are like the reflector but they have rotation too!
 class Reflector():
     def __init__(self,newReflectorType):
         if(newReflectorType == "B"):
@@ -223,7 +233,7 @@ class Enigma():
                 letterCount = letterCount + 1
 
             #TODO
-            #ROTORS HAVE TO MOVE - NOTCHES DO THINGS, etc.
+            #ROTORS 2 and 3 HAVE TO MOVE - "NOTCHES" !!!! etc.
 
         return cypher
 
