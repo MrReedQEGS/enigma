@@ -1,6 +1,6 @@
 #first attempt at making a virtual engima machine
-# Jan 2025
-# Mark Reed
+# 26th Jan 2025
+# Mr Reed
 
 #NO NOTCH/TURNOVER YET, but it is working!!!!
 
@@ -17,10 +17,10 @@
 #Rotor settings from website https://enigma.virtualcolossus.co.uk/technical.html
 
 #Wheel	ABCDEFGHIJKLMNOPQRSTUVWXYZ	Notch	Turnover	No. Notches
-#ETW	ABCDEFGHIJKLMNOPQRSTUVWXYZ	 	 	 
+#ETW	  ABCDEFGHIJKLMNOPQRSTUVWXYZ	 	 	 
 #I	    EKMFLGDQVZNTOWYHXUSPAIBRCJ	  Y	        Q	        1
 #II	    AJDKSIRUXBLHWTMCQGZNPYFVOE	  M	        E	        1
-#III	BDFHJLCPRTXVZNYEIWGAKMUSQO	  D	        V	        1
+#III	  BDFHJLCPRTXVZNYEIWGAKMUSQO	  D	        V	        1
 #IV	    ESOVPZJAYQUIRHXLNFTGKDCMWB	  R	        J	        1
 #V	    VZBRGITYUPSDNHLXAWMJQOFECK	  H	        Z	        1
 
@@ -33,6 +33,12 @@
 # The ring settings, or Ringstellung, are used to change the position of the alphabet ring relative to the 
 # internal wiring. The notch and alphabet ring are fixed together. Changing the ring setting will therefore change 
 # the positions of the wiring, relative to the turnover-point and start position.
+
+#RING SETTINGS INFO...
+#A "user setting" of AAZ is the same as a "ring setting" of AAB.  It goes the other way!!!!!
+#This means that I can use my "user settings" code to deal with "ring settings" as long as I turn B into Z or C into Y, etc.
+#The above only needs doing once at the start just like the "user settings" process.  Should be easy!!!
+
 
 # REFLECTORS
 #       ABCDEFGHIJKLMNOPQRSTUVWXYZ	
@@ -105,7 +111,7 @@ UKW_C       = ["F","V","P","J","I","A","O","Y","E","D","R","Z","X","W","G","C","
 UKW_C_NUMS = MakeForwardsMappingList(UKW_C)
 
 class Rotor():
-    def __init__(self,newRotorType,newPos):
+    def __init__(self,newRotorType,newUserSetting,newRingSetting):
         if(newRotorType == "I"):
             self.rotorMapping = ROTOR_I_NUMS
             self.rotorMappingBackwards = ROTOR_I_NUMS_BACK
@@ -122,8 +128,34 @@ class Rotor():
             self.notch = "D"
             self.turnover = "V"
         
-        self.InitialiseRotorPos(newPos)
-
+        self.InitialiseRotorPos(newUserSetting)
+        
+        #ring settings are like user settings but the opposite rotation
+        convertedRingSetting = self.ConvertRingSettingToUserSetting(newRingSetting)
+        self.InitialiseRotorPos(convertedRingSetting)
+        
+    def ConvertRingSettingToUserSetting(self, newRingSetting):
+        #ring settings are like user settings but the opposite rotation
+        #A ring setting of AAB is like a user setting of AAZ
+        
+        #This function convers from ring setting to user setting so I can use the same
+        #initialisation function for both.  :)
+        
+        #A -> A - Do nothing
+        #B -> Z user setting
+        #C -> Y
+        #etc.
+        
+        ringSettingValue = ord(newRingSetting) - 66
+        ordOfZ = ord("Z")
+        
+        finalValue = ordOfZ - ringSettingValue
+        
+        if(finalValue > 90):
+          finalValue = finalValue - 26
+        
+        return chr(finalValue)
+        
     def InitialiseRotorPos(self,someLetter):
         somePos = ord(someLetter) - 65
         while(somePos > 0):
@@ -155,6 +187,9 @@ class Rotor():
 
         #Should really return true or false to say if notch is moving the next wheel across!
         #TODO
+        
+        #CARE NEEDS TO BE TAKE TO NOT DO THE NOTCH DURING INITIALISATION ROTATIONS!
+        #A Boolean could fix this.  Needs testing.
 
 #TODO - inheritance?  The rotors are like the reflector but they have rotation too!
 class Reflector():
@@ -287,8 +322,11 @@ class Enigma():
 
         return cypher
 
-inText = "HELLO WORLD"
+print("VIRTUAL ENIGMA MACHINE IN PYTHON - Mr Reed 2025 (c)")
+print()
+inText = input("Plain text : ")
 inTextWithoutSpaces = inText.upper().replace(" ", "")
+print()
 
 if(DEBUG):
     print("Plain text : " + inText)
@@ -296,21 +334,22 @@ if(DEBUG):
 #Initial rotor settings - set by person sending the code
 #This is AAA really, because it moves once before the first letter is encoded.
 userSetting = "AAZ"
-ringSetting = "AAA - does not work yet"
+ringSetting = "AAA" #Same as user setting but backwards - B is like Z, etc.
 rotor1Type = "I"
 rotor2Type = "II"
 rotor3Type = "III"
 reflectorType = "B"
 
-r1 = Rotor(rotor1Type,userSetting[2])
-r2 = Rotor(rotor2Type,userSetting[1])
-r3 = Rotor(rotor3Type,userSetting[0])
+r1 = Rotor(rotor1Type,userSetting[2],ringSetting[2])
+r2 = Rotor(rotor2Type,userSetting[1],ringSetting[1])
+r3 = Rotor(rotor3Type,userSetting[0],ringSetting[0])
 ref = Reflector(reflectorType)
 
 myPlugBoard = PlugBoard()
-myPlugBoard.AddPlugPair(["A","W"])
-myPlugBoard.AddPlugPair(["H","Z"])
-myPlugBoard.AddPlugPair(["B","L"])
+#myPlugBoard.AddPlugPair(["A","W"])
+#myPlugBoard.AddPlugPair(["H","Z"])
+#myPlugBoard.AddPlugPair(["B","L"])
+#myPlugBoard.AddPlugPair(["R","F"])
 
 theEnigma = Enigma(r1,r2,r3,ref,myPlugBoard)
 
@@ -319,8 +358,6 @@ if(DEBUG):
 
 outText = theEnigma.scrambleMessage(inTextWithoutSpaces)
 
-print("VIRTUAL ENIGMA MACHINE IN PYTHON - Mark Reed 2025 (c)")
-print()
 print("SETTINGS")
 print("--------")
 print("Rotors        : " + rotor3Type + " <-- " + rotor2Type + " <-- " + rotor1Type + " <-- PLAIN TEXT" )
