@@ -189,6 +189,12 @@ class PlugBoard():
                 return newLetter
 
         return newLetter
+  
+    def PrintPlugPairs(self):
+      print("Plug board  : ",end="")
+      for pair in self.plugList:
+        print(pair,end = ",")
+      print()
 
 class Enigma():
     def __init__(self,newRotor1,newRotor2,newRotor3,newReflector,newPlugBoard):
@@ -281,7 +287,7 @@ class Enigma():
 
         return cypher
 
-inText = "AAAAS SSS"
+inText = "HELLO WORLD"
 inTextWithoutSpaces = inText.upper().replace(" ", "")
 
 if(DEBUG):
@@ -290,11 +296,17 @@ if(DEBUG):
 #Initial rotor settings - set by person sending the code
 #This is AAA really, because it moves once before the first letter is encoded.
 userSetting = "AAZ"
+ringSetting = "AAA - does not work yet"
+rotor1Type = "I"
+rotor2Type = "II"
+rotor3Type = "III"
+reflectorType = "B"
 
-r1 = Rotor("I",userSetting[2])
-r2 = Rotor("II",userSetting[1])
-r3 = Rotor("III",userSetting[0])
-ref = Reflector("B")
+r1 = Rotor(rotor1Type,userSetting[2])
+r2 = Rotor(rotor2Type,userSetting[1])
+r3 = Rotor(rotor3Type,userSetting[0])
+ref = Reflector(reflectorType)
+
 myPlugBoard = PlugBoard()
 myPlugBoard.AddPlugPair(["A","W"])
 myPlugBoard.AddPlugPair(["H","Z"])
@@ -306,6 +318,15 @@ if(DEBUG):
     theEnigma.PrintAllRotors()
 
 outText = theEnigma.scrambleMessage(inTextWithoutSpaces)
+
+print("SETTINGS")
+print("--------")
+print("Rotors        : " + rotor3Type + " <-- " + rotor2Type + " <-- " + rotor1Type + " <-- PLAIN TEXT" )
+print("Reflector     : " + reflectorType)
+print("Ring settting : " + ringSetting)
+print("User settting : " + userSetting)
+theEnigma.thePlugBoard.PrintPlugPairs()
+print()
 
 print("Plain text : " + inText)
 print("Cypher     : " + outText)
