@@ -319,6 +319,8 @@ if(DEBUG):
 
 outText = theEnigma.scrambleMessage(inTextWithoutSpaces)
 
+print("VIRTUAL ENIGMA MACHINE IN PYTHON - Mark Reed 2025 (c)")
+print()
 print("SETTINGS")
 print("--------")
 print("Rotors        : " + rotor3Type + " <-- " + rotor2Type + " <-- " + rotor1Type + " <-- PLAIN TEXT" )
