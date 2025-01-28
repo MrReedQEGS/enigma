@@ -346,7 +346,7 @@ r3 = Rotor(rotor3Type,userSetting[0],ringSetting[0])
 ref = Reflector(reflectorType)
 
 myPlugBoard = PlugBoard()
-#myPlugBoard.AddPlugPair(["A","W"])
+myPlugBoard.AddPlugPair(["A","W"])
 #myPlugBoard.AddPlugPair(["H","Z"])
 #myPlugBoard.AddPlugPair(["B","L"])
 #myPlugBoard.AddPlugPair(["R","F"])
