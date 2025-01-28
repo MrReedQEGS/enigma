@@ -17,10 +17,10 @@
 #Rotor settings from website https://enigma.virtualcolossus.co.uk/technical.html
 
 #Wheel	ABCDEFGHIJKLMNOPQRSTUVWXYZ	Notch	Turnover	No. Notches
-#ETW	  ABCDEFGHIJKLMNOPQRSTUVWXYZ	 	 	 
+#ETW	ABCDEFGHIJKLMNOPQRSTUVWXYZ	 	 	 
 #I	    EKMFLGDQVZNTOWYHXUSPAIBRCJ	  Y	        Q	        1
 #II	    AJDKSIRUXBLHWTMCQGZNPYFVOE	  M	        E	        1
-#III	  BDFHJLCPRTXVZNYEIWGAKMUSQO	  D	        V	        1
+#III	BDFHJLCPRTXVZNYEIWGAKMUSQO	  D	        V	        1
 #IV	    ESOVPZJAYQUIRHXLNFTGKDCMWB	  R	        J	        1
 #V	    VZBRGITYUPSDNHLXAWMJQOFECK	  H	        Z	        1
 
@@ -360,7 +360,12 @@ outText = theEnigma.scrambleMessage(inTextWithoutSpaces)
 
 print("SETTINGS")
 print("--------")
-print("Rotors        : " + rotor3Type + " <-- " + rotor2Type + " <-- " + rotor1Type + " <-- PLAIN TEXT" )
+print("Rotors        : REFLECT " + rotor3Type + " <-- " + rotor2Type + " <-- " + rotor1Type + " <-- PLAIN  TEXT" )
+print("                   V    ")
+print("                   V    ")
+print("                >>>>>>> " + rotor3Type + " --> " + rotor2Type + " --> " + rotor1Type + " --> CYPHER TEXT" )
+print()
+
 print("Reflector     : " + reflectorType)
 print("Ring settting : " + ringSetting)
 print("User settting : " + userSetting)
