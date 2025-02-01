@@ -1,9 +1,18 @@
 import pygame
+
+#NEXT JOB - SELECTING ROTOR NUMBERS AND RING SETTINGS SHOULD COME FIRST.
+    #      - THEN SOME SORT OF BUTTON TO ALLOW THEM TO CHANGE
+    #      - A RESET FUNCTION WILL BE NEEDED TO START IT ALL AGAIN WITH NEW SETTINGS
+          
+
+#PYGAME EDITION - This is a front end for the text based 
+#enigma routine that I made.
+
 #first attempt at making a virtual engima machine
 # 26th Jan 2025
 # Mr Reed
 
-#NO NOTCH/TURNOVER YET, but it is working!!!!
+#NO NOTCH/TURNOVER YET, but it is working apart from that
 
 #I could do with numbering my rotors 1 2 3, but I did it this way.
 
@@ -102,7 +111,15 @@ ROTOR_III   = "BDFHJLCPRTXVZNYEIWGAKMUSQO"
 ROTOR_III_NUMS = MakeForwardsMappingList(ROTOR_III)
 ROTOR_III_NUMS_BACK = MakeBackwardsMappingList(ROTOR_III)
 
-#ROTOR_IV    = ["E","S","O","V","P","Z","J","A","Y","Q","U","I","R","H","X","L","N","F","T","G","K","D","C","M","W","B"]
+ROTOR_IV   = "ESOVPZJAYQUIRHXLNFTGKDCMWB"
+ROTOR_IV_NUMS = MakeForwardsMappingList(ROTOR_IV)
+ROTOR_IV_NUMS_BACK = MakeBackwardsMappingList(ROTOR_IV)
+
+ROTOR_V   = "VZBRGITYUPSDNHLXAWMJQOFECK"
+ROTOR_V_NUMS = MakeForwardsMappingList(ROTOR_V)
+ROTOR_V_NUMS_BACK = MakeBackwardsMappingList(ROTOR_V)
+
+
 #ROTOR_V     = ["V","Z","B","R","G","I","T","Y","U","P","S","D","N","H","L","X","A","W","M","J","Q","O","F","E","C","K"]
 #UKW_A       = ["E","J","M","Z","A","L","Y","X","V","B","W","F","C","R","Q","U","O","N","T","S","P","I","K","H","G","D"]	 	 	 
 UKW_B       = "YRUHQSLDPXNGOKMIEBFZCWVJAT"	 
@@ -128,6 +145,16 @@ class Rotor():
             self.rotorMappingBackwards = ROTOR_III_NUMS_BACK
             self.notch = "D"
             self.turnover = "V"
+        elif(newRotorType == "IV"):
+            self.rotorMapping = ROTOR_IV_NUMS
+            self.rotorMappingBackwards = ROTOR_IV_NUMS_BACK
+            self.notch = "R"
+            self.turnover = "J"
+        elif(newRotorType == "V"):
+            self.rotorMapping = ROTOR_V_NUMS
+            self.rotorMappingBackwards = ROTOR_V_NUMS_BACK
+            self.notch = "H"
+            self.turnover = "Z"
         
         self.InitialiseRotorPos(newUserSetting)
         
@@ -178,19 +205,22 @@ class Rotor():
             newPos = 26 + newPos
 
         return newPos
-        
+    
+    def RotateBackwards(self):
+        numOfThings = len(self.rotorMapping)
+        lastThing = self.rotorMapping.pop(numOfThings-1)
+        self.rotorMapping.insert(0,lastThing)
+
+        numOfThings = len(self.rotorMappingBackwards)
+        lastThing = self.rotorMappingBackwards.pop(numOfThings-1)
+        self.rotorMappingBackwards.insert(0,lastThing)
+    
     def Rotate(self):
         firstThing = self.rotorMapping.pop(0)
         self.rotorMapping.append(firstThing)
 
         firstThing = self.rotorMappingBackwards.pop(0)
         self.rotorMappingBackwards.append(firstThing)
-
-        #Should really return true or false to say if notch is moving the next wheel across!
-        #TODO
-        
-        #CARE NEEDS TO BE TAKE TO NOT DO THE NOTCH DURING INITIALISATION ROTATIONS!
-        #A Boolean could fix this.  Needs testing.
 
 #TODO - inheritance?  The rotors are like the reflector but they have rotation too!
 class Reflector():
@@ -255,8 +285,9 @@ class Enigma():
                 print("Working on letter : " + letter)
                 print("---------------------")
 
-            
-            self.rotor1.Rotate()  #It rotates BEFORE the cypher happens!!!
+            #It rotates BEFORE the cypher happens!!!
+            #Rotate the right most rotor
+            RotorForward(2)
 
             if(DEBUG):
                 self.PrintAllRotors()
@@ -323,65 +354,35 @@ class Enigma():
 
         return cypher
 
-def MainBit():
-  #TEXT APPLICATION BIT
-  print("VIRTUAL ENIGMA MACHINE IN PYTHON - Mr Reed 2025 (c)")
-  print()
-  inText = input("Plain text : ")
-  inTextWithoutSpaces = inText.upper().replace(" ", "")
-  print()
-  
-  if(DEBUG):
-      print("Plain text : " + inText)
-  
-  #Initial rotor settings - set by person sending the code
-  #This is AAA really, because it moves once before the first letter is encoded.
-  userSetting = "AAZ"
-  ringSetting = "AAA" #Same as user setting but backwards - B is like Z, etc.
-  rotor1Type = "I"
-  rotor2Type = "II"
-  rotor3Type = "III"
-  reflectorType = "B"
-  
-  r1 = Rotor(rotor1Type,userSetting[2],ringSetting[2])
-  r2 = Rotor(rotor2Type,userSetting[1],ringSetting[1])
-  r3 = Rotor(rotor3Type,userSetting[0],ringSetting[0])
-  ref = Reflector(reflectorType)
-  
-  myPlugBoard = PlugBoard()
-  #myPlugBoard.AddPlugPair(["A","W"])
-  #myPlugBoard.AddPlugPair(["H","Z"])
-  #myPlugBoard.AddPlugPair(["B","L"])
-  #myPlugBoard.AddPlugPair(["R","F"])
-  
-  theEnigma = Enigma(r1,r2,r3,ref,myPlugBoard)
-  
-  if(DEBUG):
-      theEnigma.PrintAllRotors()
-  
-  outText = theEnigma.scrambleMessage(inTextWithoutSpaces)
-  
-  print("SETTINGS")
-  print("--------")
-  print("Rotors        : " + rotor3Type + " <-- " + rotor2Type + " <-- " + rotor1Type + " <-- PLAIN TEXT" )
-  print("Reflector     : " + reflectorType)
-  print("Ring settting : " + ringSetting)
-  print("User settting : " + userSetting)
-  theEnigma.thePlugBoard.PrintPlugPairs()
-  print()
-  
-  print("Plain text : " + inText)
-  print("Cypher     : " + outText)
-
 def RotorForward(rotorNum):
+  
+  #This bit does the graphics on the screen
   global userSetting
-  letter = userSetting[rotorNum]
-  num = ord(letter)
+  oldletter = userSetting[rotorNum]
+  num = ord(oldletter)
   num = num + 1
   if(num >= 65 + 26):
     num = 65
-  letter = chr(num)
-  userSetting[rotorNum] = letter
+  newletter = chr(num)
+  userSetting[rotorNum] = newletter
+  
+  #Now do the actual enigma rotor internally
+  if(rotorNum == 0):
+    theEnigma.rotor3.Rotate()
+  if(rotorNum == 1):
+    theEnigma.rotor2.Rotate()
+    #The notch might make rotor 2 move by one place!
+    #Rotor I does this when Q moves out of the window
+    #and this is called the turnover
+    if oldletter.upper() == theEnigma.rotor2.turnover:
+      RotorForward(0)
+  if(rotorNum == 2):
+    theEnigma.rotor1.Rotate()
+    #The notch might make rotor 2 move by one place!
+    #Rotor I does this when Q moves out of the window
+    #and this is called the turnover
+    if oldletter.upper() == theEnigma.rotor1.turnover:
+      RotorForward(1)
   
 def RotorBackwards(rotorNum):
   global userSetting
@@ -393,23 +394,152 @@ def RotorBackwards(rotorNum):
   letter = chr(num)
   userSetting[rotorNum] = letter
   
+   #Now do the actual enigma rotor internally
+  if(rotorNum == 0):
+    theEnigma.rotor3.RotateBackwards()
+  if(rotorNum == 1):
+    theEnigma.rotor2.RotateBackwards()
+  if(rotorNum == 2):
+    theEnigma.rotor1.RotateBackwards()
+  
+def ChangeRotorNum(rotorNum):
+  global rotorNumbers
+  currentNum = rotorNumbers[rotorNum]
+  pos = ROTOR_NUM_LIST.index(currentNum)
+  pos = pos + 1
+  if(pos >= len(ROTOR_NUM_LIST)):
+    pos = 0
+  rotorNumbers[rotorNum] = ROTOR_NUM_LIST[pos]
+  
 def DrawRotorText():
   rotor1Text = my_font.render(userSetting[0], False, (0, 0, 0))
-  scrn.blit(rotor1Text, (170,72))
+  scrn.blit(rotor1Text, (170,62))
   
   rotor2Text = my_font.render(userSetting[1], False, (0, 0, 0))
-  scrn.blit(rotor2Text, (232,72))
+  scrn.blit(rotor2Text, (232,62))
   
   rotor3Text = my_font.render(userSetting[2], False, (0, 0, 0))
-  scrn.blit(rotor3Text, (294,72))
+  scrn.blit(rotor3Text, (294,62))
 
+def DrawRotorNumbers():
+  rotor1Num = my_font_small.render(rotorNumbers[0], False, (0, 0, 0))
+  scrn.blit(rotor1Num, (171,135))
+  
+  rotor2Num = my_font_small.render(rotorNumbers[1], False, (0, 0, 0))
+  scrn.blit(rotor2Num, (235,136))
+  
+  rotor3Num = my_font_small.render(rotorNumbers[2], False, (0, 0, 0))
+  scrn.blit(rotor3Num, (297,136))
+
+def CheckForUserSettingsChange():
+  pos = pygame.mouse.get_pos()
+  #print(pos)
+  x = pos[0]
+  y = pos[1]
+  if(x >= 160 and x <= 200 and y >= 85 and y<= 115):
+    RotorForward(0)
+  elif(x >= 160 and x <= 200 and y >= 20 and y<= 53):
+    RotorBackwards(0)
+  elif(x >= 214 and x <= 260 and y >= 85 and y<= 115):
+    RotorForward(1)
+  elif(x >= 214 and x <= 260 and y >= 20 and y<= 53):
+    RotorBackwards(1)
+  elif(x >= 275 and x <= 330 and y >= 85 and y<= 115):
+    RotorForward(2)
+  elif(x >= 275 and x <= 330 and y >= 20 and y<= 53):
+    RotorBackwards(2)
+  elif(x >= 166 and x <= 187 and y >= 135 and y<= 150):
+    ChangeRotorNum(0)
+  elif(x >= 230 and x <= 251 and y >= 135 and y<= 150):
+    ChangeRotorNum(1)
+  elif(x >= 290 and x <= 313 and y >= 135 and y<= 150):
+    ChangeRotorNum(2)
+    
+def UpdateCursor():
+  #Change cursor to a hand when on a rotor setting button or rotor num button
+  pos = pygame.mouse.get_pos()
+  #print(pos)
+  x = pos[0]
+  y = pos[1]
+  if(x >= 160 and x <= 200 and y >= 85 and y<= 115):
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+  elif(x >= 160 and x <= 200 and y >= 20 and y<= 53):
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+  elif(x >= 214 and x <= 260 and y >= 85 and y<= 115):
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+  elif(x >= 214 and x <= 260 and y >= 20 and y<= 53):
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+  elif(x >= 275 and x <= 330 and y >= 85 and y<= 115):
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+  elif(x >= 275 and x <= 330 and y >= 20 and y<= 53):
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+  elif(x >= 166 and x <= 187 and y >= 135 and y<= 150):
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+  elif(x >= 230 and x <= 251 and y >= 135 and y<= 150):
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+  elif(x >= 290 and x <= 313 and y >= 135 and y<= 150):
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+  else:
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW) 
+
+def draw_circle_alpha(surface, color, center, radius):
+    #pygame does not support transparent circles directly.  This is a workaround.
+    target_rect = pygame.Rect(center, (0, 0)).inflate((radius * 2, radius * 2))
+    shape_surf = pygame.Surface(target_rect.size, pygame.SRCALPHA)
+    pygame.draw.circle(shape_surf, color, (radius, radius), radius)
+    surface.blit(shape_surf, target_rect)
+
+def HighlightKeys(theSurface):
+  for letter in keysToHightLight:
+    draw_circle_alpha(theSurface, HIGHTLIGHT_COL, higlightMapping[letter], HIGHLIGHT_SIZE)
+
+def DrawPlainAndCypherText(theSurface):
+  plain = my_font_small.render("PLAIN    : " + thePlainText, False, (255, 255, 255))
+  scrn.blit(plain, (7,560))
+  cypher = my_font_small.render("CYPHER : " + theCypherText, False, (255, 255, 255))
+  scrn.blit(cypher, (5,580))
+
+def LightUpAKey(somekey):
+  #Only works for lowercase key presses
+  global thePlainText,theCypherText
+  somekey = somekey - 32
+  if(somekey < 65 or somekey > 65 + 26):
+    somekey = 65
+    
+  thePressedKey = chr(somekey)
+  outText = theEnigma.scrambleMessage(thePressedKey)
+  keysToHightLight.append(outText)    
+  thePlainText = thePlainText + thePressedKey
+  theCypherText = theCypherText + outText
+      
 #PYGAME BIT
-userSetting = ["A","B","C"]
+
+#Coords of highlight circles
+higlightMapping = {"A":(105,256),"B":(348,311),"C":(235,311),"D":(218,257),
+                   "E":(199,203),"F":(274,257),"G":(329,257),"H":(386,258),
+                   "I":(479,205),"J":(442,258),"K":(498,258),"L":(516,312),
+                   "M":(461,312),"N":(404,311),"O":(535,205),"P":(67,310),
+                   "Q":(88,203),"R":(255,203),"S":(161,256),"T":(311,203),
+                   "U":(423,204),"V":(291,311),"W":(143,203),"X":(180,310),
+                   "Y":(123,310),"Z":(367,204)}
+
+HIGHLIGHT_SIZE= 15
+HIGHTLIGHT_COL = (255, 255, 51, 80)
+keysToHightLight = []
+
+userSetting = ["A","A","A"]
+rotorNumbers = ["III","I","II"]
+ROTOR_NUM_LIST = ["I","II","III","IV","V"]
+
+thePlainText = ""
+theCypherText = ""
+
 pygame.init()
 
 pygame.font.init() # you have to call this at the start, 
                    # if you want to use this module.
 my_font = pygame.font.SysFont('Comic Sans MS', 28)
+my_font_small = pygame.font.SysFont('Comic Sans MS', 20)
   
 X = 600
 Y = 600
@@ -422,7 +552,7 @@ scrn = pygame.display.set_mode((X, Y))
 #pygame.display.set_caption('image')
  
 # create a surface object, image is drawn on it.
-image = pygame.image.load("enigma.png")
+image = pygame.image.load("enigma2.png")
 bigImage = pygame.transform.scale(image, (X, Y))
  
 #PYGAME LOOP
@@ -430,38 +560,55 @@ bigImage = pygame.transform.scale(image, (X, Y))
 # if game is running
 running = True
  
-# Game loop
-# keep game running till running is true
-#a = 1
+pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
+ringSetting = "AAA" #Same as user setting but backwards - B is like Z, etc.
+
+rotor1Type = rotorNumbers[2]
+rotor2Type = rotorNumbers[1]
+rotor3Type = rotorNumbers[0]
+reflectorType = "B"
+
+r1 = Rotor(rotor1Type,userSetting[2],ringSetting[2])
+r2 = Rotor(rotor2Type,userSetting[1],ringSetting[1])
+r3 = Rotor(rotor3Type,userSetting[0],ringSetting[0])
+ref = Reflector(reflectorType)
+
+myPlugBoard = PlugBoard()
+#myPlugBoard.AddPlugPair(["A","W"])
+#myPlugBoard.AddPlugPair(["H","Z"])
+#myPlugBoard.AddPlugPair(["B","L"])
+#myPlugBoard.AddPlugPair(["R","F"])
+
+theEnigma = Enigma(r1,r2,r3,ref,myPlugBoard)
+
 while running:
  
   for event in pygame.event.get():
     
-      if event.type == pygame.QUIT:
-          pygame.quit()
-          sys.exit()
-       
-      if event.type == pygame.MOUSEBUTTONUP:
-        pos = pygame.mouse.get_pos()
-        print(pos)
-        x = pos[0]
-        y = pos[1]
-        if(x >= 160 and x <= 200 and y >= 91 and y<= 125):
-          RotorForward(0)
-        elif(x >= 160 and x <= 200 and y >= 24 and y<= 60):
-          RotorBackwards(0)
-        elif(x >= 214 and x <= 260 and y >= 91 and y<= 125):
-          RotorForward(1)
-        elif(x >= 214 and x <= 260 and y >= 24 and y<= 60):
-          RotorBackwards(1)
-        elif(x >= 275 and x <= 330 and y >= 91 and y<= 125):
-          RotorForward(2)
-        elif(x >= 275 and x <= 330 and y >= 24 and y<= 60):
-          RotorBackwards(2)
+    if event.type == pygame.QUIT:
+        pygame.quit()
+        sys.exit()
+    
+    if event.type == pygame.MOUSEMOTION:
+      UpdateCursor() 
+    if event.type == pygame.MOUSEBUTTONUP:  
+      CheckForUserSettingsChange()
+    
+    #TODO - move this to a function and do every key!
+    #Can this be done better with keys = pygame.key.get_pressed() <- list???
+    if event.type == pygame.KEYDOWN:
+        LightUpAKey(event.key)
+        
+    if event.type == pygame.KEYUP:
+        keysToHightLight = []
+          
   # Using blit to copy content from one surface to other
   scrn.blit(bigImage, (0, 0))
   
   DrawRotorText()
+  DrawRotorNumbers()
+  HighlightKeys(scrn)
+  DrawPlainAndCypherText(scrn)
 
   pygame.display.flip()
-
