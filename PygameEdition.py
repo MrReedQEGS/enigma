@@ -1,4 +1,4 @@
-import pygame
+import pygame,sys
 
 #NEXT JOB - SELECTING ROTOR NUMBERS AND RING SETTINGS SHOULD COME FIRST.
     #      - THEN SOME SORT OF BUTTON TO ALLOW THEM TO CHANGE
@@ -528,7 +528,7 @@ HIGHTLIGHT_COL = (255, 255, 51, 80)
 keysToHightLight = []
 
 userSetting = ["A","A","A"]
-rotorNumbers = ["III","I","II"]
+rotorNumbers = ["III","II","I"]
 ROTOR_NUM_LIST = ["I","II","III","IV","V"]
 
 thePlainText = ""
