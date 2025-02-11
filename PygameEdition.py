@@ -461,6 +461,8 @@ def UpdateCursor():
   #print(pos)
   x = pos[0]
   y = pos[1]
+
+  #The first 6 places where the cursor changes are the up and down arrows on the 3 rotors
   if(x >= 160 and x <= 200 and y >= 85 and y<= 115):
     pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
   elif(x >= 160 and x <= 200 and y >= 20 and y<= 53):
@@ -495,9 +497,9 @@ def HighlightKeys(theSurface):
 
 def DrawPlainAndCypherText(theSurface):
   plain = my_font_small.render("PLAIN    : " + thePlainText, False, (255, 255, 255))
-  scrn.blit(plain, (7,560))
+  scrn.blit(plain, (7,760))
   cypher = my_font_small.render("CYPHER : " + theCypherText, False, (255, 255, 255))
-  scrn.blit(cypher, (5,580))
+  scrn.blit(cypher, (5,780))
 
 def LightUpAKey(somekey):
   #Only works for lowercase key presses
@@ -542,7 +544,7 @@ my_font = pygame.font.SysFont('Comic Sans MS', 28)
 my_font_small = pygame.font.SysFont('Comic Sans MS', 20)
   
 X = 600
-Y = 600
+Y = 800
  
 # create the display surface object
 # of specific dimension..e(X, Y).
@@ -552,7 +554,7 @@ scrn = pygame.display.set_mode((X, Y))
 #pygame.display.set_caption('image')
  
 # create a surface object, image is drawn on it.
-image = pygame.image.load("enigma2.png")
+image = pygame.image.load("enigma3.png")
 bigImage = pygame.transform.scale(image, (X, Y))
  
 #PYGAME LOOP

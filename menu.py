@@ -11,10 +11,7 @@ screen = pygame.display.set_mode([WIDTH, HEIGHT])
 pygame.display.set_caption('Menus Tutorial')
 main_menu = False
 font = pygame.font.Font('freesansbold.ttf', 24)
-bg = pygame.transform.scale(pygame.image.load('Logo.png'), (300, 300))
-ball = pygame.transform.scale(pygame.image.load('Logo.png'), (150, 150))
 menu_command = 0
-
 
 class Button:
     def __init__(self, txt, pos):
@@ -23,7 +20,7 @@ class Button:
         self.button = pygame.rect.Rect((self.pos[0], self.pos[1]), (260, 40))
 
     def draw(self):
-        pygame.draw.rect(screen, 'light gray', self.button, 0, 5)
+        pygame.draw.rect(screen, 'light gray', self.button, 0, 1)
         pygame.draw.rect(screen, 'dark gray', [self.pos[0], self.pos[1], 260, 40], 5, 5)
         text2 = font.render(self.text, True, 'black')
         screen.blit(text2, (self.pos[0] + 15, self.pos[1] + 7))
@@ -34,11 +31,10 @@ class Button:
         else:
             return False
 
-
 def draw_menu():
     command = -1
     pygame.draw.rect(screen, 'black', [100, 100, 300, 300])
-    screen.blit(bg, (100, 100))
+    #screen.blit(bg, (100, 100))
     pygame.draw.rect(screen, 'green', [100, 100, 300, 300], 5)
     pygame.draw.rect(screen, 'white', [120, 120, 260, 40], 0, 5)
     pygame.draw.rect(screen, 'gray', [120, 120, 260, 40], 5, 5)
@@ -63,14 +59,12 @@ def draw_menu():
         command = 3
     return command
 
-
 def draw_game():
     menu_btn = Button('Main Menu', (230, 450))
     menu_btn.draw()
     menu = menu_btn.check_clicked()
-    screen.blit(ball, (175, 175))
+    #screen.blit(ball, (175, 175))
     return menu
-
 
 run = True
 while run:
