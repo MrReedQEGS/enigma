@@ -516,6 +516,13 @@ def LightUpAKey(somekey):
       
 #PYGAME BIT
 
+def MuteButtonCallback():
+  print("Hello")
+
+
+
+
+
 #Coords of highlight circles
 higlightMapping = {"A":(105,256),"B":(348,311),"C":(235,311),"D":(218,257),
                    "E":(199,203),"F":(274,257),"G":(329,257),"H":(386,258),
@@ -549,6 +556,12 @@ Y = 800
 # create the display surface object
 # of specific dimension..e(X, Y).
 scrn = pygame.display.set_mode((X, Y))
+
+muteImageGreyName = "./images/MuteGrey.jpg"
+muteImageName = "./images/Mute.jpg"
+muteImage = pygame.image.load(muteImageName).convert()
+muteGreyImage = pygame.image.load(muteImageGreyName).convert()
+theMuteButton = UsefulClasses.MyClickableCircleButton(28,575,20,scrn,MuteButtonCallback)
  
 # set the pygame window name
 #pygame.display.set_caption('image')
@@ -612,5 +625,7 @@ while running:
   DrawRotorNumbers()
   HighlightKeys(scrn)
   DrawPlainAndCypherText(scrn)
+
+  theMuteButton.DrawSelf()
 
   pygame.display.flip()

@@ -69,6 +69,30 @@ class MyClickableImageButton:
                 self.parentSurface.blit(self.img, (self.rect.x, self.rect.y))
 
 
+#Clickable circle button
+class MyClickableCircleButton:
+    def __init__(self, x, y, newRadius, newParentSurface,theNewCallback):
+       
+        self.location = (x,y)
+        self.radius = newRadius
+        self.clicked = False
+        self.parentSurface = newParentSurface
+        self.theCallback = theNewCallback
+        self.rect = pygame.Rect(self.location[0],self.location[1],self.radius,self.radius)
+
+    def DrawSelf(self):
+        pygame.draw.rect(self.parentSurface, (200,200,200),self.rect,4)
+        pos=pygame.mouse.get_pos()
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] and not self.clicked:
+                self.clicked=True
+                self.theCallback()
+            if not pygame.mouse.get_pressed()[0]:
+                self.clicked=False
+                pygame.draw.rect(self.parentSurface, (200,0,0),self.rect,4)
+    
+            
+
 #A Generic game grid class - It deals with the dreaded "rows" and "cols" V (x,y) situation for easy coding!
 class MyGameGrid():
     def __init__(self,newRows,newCols,newListOfAllowedCellItems,newPosOfBlankItem):

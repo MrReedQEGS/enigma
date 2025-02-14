@@ -20,7 +20,7 @@ class Button:
         self.button = pygame.rect.Rect((self.pos[0], self.pos[1]), (260, 40))
 
     def draw(self):
-        pygame.draw.rect(screen, 'light gray', self.button, 0, 1)
+        pygame.draw.rect(screen, 'light gray', self.button, 0, 5)
         pygame.draw.rect(screen, 'dark gray', [self.pos[0], self.pos[1], 260, 40], 5, 5)
         text2 = font.render(self.text, True, 'black')
         screen.blit(text2, (self.pos[0] + 15, self.pos[1] + 7))
