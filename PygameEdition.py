@@ -1,4 +1,4 @@
-import pygame,sys
+import pygame,sys,UsefulClasses
 
 #NEXT JOB - SELECTING ROTOR NUMBERS AND RING SETTINGS SHOULD COME FIRST.
     #      - THEN SOME SORT OF BUTTON TO ALLOW THEM TO CHANGE
