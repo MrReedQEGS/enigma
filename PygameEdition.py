@@ -557,6 +557,7 @@ Y = 800
 # of specific dimension..e(X, Y).
 scrn = pygame.display.set_mode((X, Y))
 
+#MAKE THE PLUG BOARD BUTTONS
 PLUG_SPACING = 55
 pluboardRow1 = ["Q","W","E","R","T","Z","U","I","O"]
 plubboardButtonsRow1 = []
@@ -576,7 +577,6 @@ for i in range(len(pluboardRow3)):
   plugBoardButton = UsefulClasses.MyPlugboardButton(63+i*PLUG_SPACING,705,20,scrn,pluboardRow3[i],plugBoardCallback)
   plubboardButtonsRow3.append(plugBoardButton)
 
- 
 # set the pygame window name
 #pygame.display.set_caption('image')
  

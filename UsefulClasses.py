@@ -99,7 +99,6 @@ class MyPlugboardButton:
                 pygame.draw.rect(self.parentSurface, (200,0,0),self.rect,4)
     
             
-
 #A Generic game grid class - It deals with the dreaded "rows" and "cols" V (x,y) situation for easy coding!
 class MyGameGrid():
     def __init__(self,newRows,newCols,newListOfAllowedCellItems,newPosOfBlankItem):
