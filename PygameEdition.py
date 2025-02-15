@@ -516,8 +516,8 @@ def LightUpAKey(somekey):
       
 #PYGAME BIT
 
-def MuteButtonCallback():
-  print("Hello")
+def plugBoardCallback(letter):
+  print("Plug board : " + letter)
 
 
 
@@ -557,11 +557,25 @@ Y = 800
 # of specific dimension..e(X, Y).
 scrn = pygame.display.set_mode((X, Y))
 
-muteImageGreyName = "./images/MuteGrey.jpg"
-muteImageName = "./images/Mute.jpg"
-muteImage = pygame.image.load(muteImageName).convert()
-muteGreyImage = pygame.image.load(muteImageGreyName).convert()
-theMuteButton = UsefulClasses.MyClickableCircleButton(28,575,20,scrn,MuteButtonCallback)
+PLUG_SPACING = 55
+pluboardRow1 = ["Q","W","E","R","T","Z","U","I","O"]
+plubboardButtonsRow1 = []
+for i in range(len(pluboardRow1)):
+  plugBoardButton = UsefulClasses.MyPlugboardButton(78+i*PLUG_SPACING,575,20,scrn,pluboardRow1[i],plugBoardCallback)
+  plubboardButtonsRow1.append(plugBoardButton)
+
+pluboardRow2 = ["A","S","D","F","G","H","J","K"]
+plubboardButtonsRow2 = []
+for i in range(len(pluboardRow2)):
+  plugBoardButton = UsefulClasses.MyPlugboardButton(95+i*PLUG_SPACING,640,20,scrn,pluboardRow2[i],plugBoardCallback)
+  plubboardButtonsRow2.append(plugBoardButton)
+
+pluboardRow3 = ["P","Y","X","C","V","B","N","M","L"]
+plubboardButtonsRow3 = []
+for i in range(len(pluboardRow3)):
+  plugBoardButton = UsefulClasses.MyPlugboardButton(63+i*PLUG_SPACING,705,20,scrn,pluboardRow3[i],plugBoardCallback)
+  plubboardButtonsRow3.append(plugBoardButton)
+
  
 # set the pygame window name
 #pygame.display.set_caption('image')
@@ -626,6 +640,11 @@ while running:
   HighlightKeys(scrn)
   DrawPlainAndCypherText(scrn)
 
-  theMuteButton.DrawSelf()
+  for button in plubboardButtonsRow1:
+    button.DrawSelf()
+  for button in plubboardButtonsRow2:
+     button.DrawSelf()
+  for button in plubboardButtonsRow3:
+     button.DrawSelf()
 
   pygame.display.flip()
