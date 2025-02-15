@@ -1,4 +1,4 @@
-import pygame,sys,UsefulClasses
+import pygame,sys
 
 #NEXT JOB - SELECTING ROTOR NUMBERS AND RING SETTINGS SHOULD COME FIRST.
     #      - THEN SOME SORT OF BUTTON TO ALLOW THEM TO CHANGE
@@ -232,6 +232,61 @@ class Reflector():
 
     def GetMappingNumber(self,inputValue):
         return self.reflectorMapping[inputValue]
+    
+#Plug board clickable button
+availPlugBoardCols = [(154,26,200),(15,167,100),(0,0,0)]
+
+class MyPlugboardButton:
+    
+    def __init__(self, x, y, newRadius, newParentSurface,newPlugboardLetter,theNewCallback):
+       
+        self.location = (x,y)
+        self.radius = newRadius
+        self.clicked = False
+        self.plugIn = False
+        self.plugInColour = None
+        self.parentSurface = newParentSurface
+        self.plugboardLetter = newPlugboardLetter
+        self.theCallback = theNewCallback
+        self.rect = pygame.Rect(self.location[0],self.location[1],self.radius,self.radius)
+        self.plugfont = pygame.font.SysFont('Comic Sans MS', 25)
+        self.plugboardText = self.plugfont.render(self.plugboardLetter, False, (255, 255, 255))
+        
+    def DrawSelf(self):
+        global availPlugBoardCols
+
+        textLocation = (self.location[0]+2,self.location[1]-25)
+
+        #Draw mouse not over colour first
+        self.parentSurface.blit(self.plugboardText, textLocation)
+        if(self.plugIn == False):
+            pygame.draw.rect(self.parentSurface, (200,200,200),self.rect,4)
+        else:
+            pygame.draw.rect(self.parentSurface, self.plugInColour,self.rect,4)
+
+        pos=pygame.mouse.get_pos()
+        if self.rect.collidepoint(pos):
+        
+            if pygame.mouse.get_pressed()[0] and not self.clicked:
+                self.clicked=True
+                self.theCallback(self.plugboardLetter)
+
+                if(self.plugIn == False): 
+                  self.plugIn = True
+                  self.plugInColour = availPlugBoardCols[0]
+                  availPlugBoardCols.pop(0)
+                  
+                else:
+                  self.plugIn = False
+                  availPlugBoardCols.insert(1,self.plugInColour)
+                  self.plugInColour = None
+
+            if not pygame.mouse.get_pressed()[0]:
+                self.clicked=False
+                if(self.plugIn == False): 
+                  pygame.draw.rect(self.parentSurface, availPlugBoardCols[0],self.rect,4)
+                else:
+                  pygame.draw.rect(self.parentSurface, self.plugInColour,self.rect,4)
 
 class PlugBoard():
     def __init__(self):
@@ -519,10 +574,6 @@ def LightUpAKey(somekey):
 def plugBoardCallback(letter):
   print("Plug board : " + letter)
 
-
-
-
-
 #Coords of highlight circles
 higlightMapping = {"A":(105,256),"B":(348,311),"C":(235,311),"D":(218,257),
                    "E":(199,203),"F":(274,257),"G":(329,257),"H":(386,258),
@@ -562,19 +613,19 @@ PLUG_SPACING = 55
 pluboardRow1 = ["Q","W","E","R","T","Z","U","I","O"]
 plubboardButtonsRow1 = []
 for i in range(len(pluboardRow1)):
-  plugBoardButton = UsefulClasses.MyPlugboardButton(78+i*PLUG_SPACING,575,20,scrn,pluboardRow1[i],plugBoardCallback)
+  plugBoardButton = MyPlugboardButton(78+i*PLUG_SPACING,575,20,scrn,pluboardRow1[i],plugBoardCallback)
   plubboardButtonsRow1.append(plugBoardButton)
 
 pluboardRow2 = ["A","S","D","F","G","H","J","K"]
 plubboardButtonsRow2 = []
 for i in range(len(pluboardRow2)):
-  plugBoardButton = UsefulClasses.MyPlugboardButton(95+i*PLUG_SPACING,640,20,scrn,pluboardRow2[i],plugBoardCallback)
+  plugBoardButton = MyPlugboardButton(95+i*PLUG_SPACING,640,20,scrn,pluboardRow2[i],plugBoardCallback)
   plubboardButtonsRow2.append(plugBoardButton)
 
 pluboardRow3 = ["P","Y","X","C","V","B","N","M","L"]
 plubboardButtonsRow3 = []
 for i in range(len(pluboardRow3)):
-  plugBoardButton = UsefulClasses.MyPlugboardButton(63+i*PLUG_SPACING,705,20,scrn,pluboardRow3[i],plugBoardCallback)
+  plugBoardButton = MyPlugboardButton(63+i*PLUG_SPACING,705,20,scrn,pluboardRow3[i],plugBoardCallback)
   plubboardButtonsRow3.append(plugBoardButton)
 
 # set the pygame window name

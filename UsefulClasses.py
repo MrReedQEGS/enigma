@@ -69,48 +69,7 @@ class MyClickableImageButton:
                 self.parentSurface.blit(self.img, (self.rect.x, self.rect.y))
 
 
-#Plug board clickable button
-class MyPlugboardButton:
-    def __init__(self, x, y, newRadius, newParentSurface,newPlugboardLetter,theNewCallback):
-       
-        self.location = (x,y)
-        self.radius = newRadius
-        self.clicked = False
-        self.plugIn = False
-        self.parentSurface = newParentSurface
-        self.plugboardLetter = newPlugboardLetter
-        self.theCallback = theNewCallback
-        self.rect = pygame.Rect(self.location[0],self.location[1],self.radius,self.radius)
-        self.plugfont = pygame.font.SysFont('Comic Sans MS', 25)
-        self.plugboardText = self.plugfont.render(self.plugboardLetter, False, (255, 255, 255))
-        
 
-    def DrawSelf(self):
-        
-        textLocation = (self.location[0]+2,self.location[1]-25)
-
-        #Draw mouse not over colour first
-        self.parentSurface.blit(self.plugboardText, textLocation)
-        if(self.plugIn == False):
-            pygame.draw.rect(self.parentSurface, (200,200,200),self.rect,4)
-        else:
-            pygame.draw.rect(self.parentSurface, (0,255,0),self.rect,4)
-
-        pos=pygame.mouse.get_pos()
-        if self.rect.collidepoint(pos):
-            if pygame.mouse.get_pressed()[0]:
-                if(self.plugIn == True):
-                    self.plugIn = False
-                else:
-                    self.plugin = True
-
-            if pygame.mouse.get_pressed()[0] and not self.clicked:
-                self.clicked=True
-                self.theCallback(self.plugboardLetter)
-            if not pygame.mouse.get_pressed()[0]:
-                self.clicked=False
-                #different colour if mouse over it.
-                pygame.draw.rect(self.parentSurface, (200,0,0),self.rect,4)
     
             
 #A Generic game grid class - It deals with the dreaded "rows" and "cols" V (x,y) situation for easy coding!
